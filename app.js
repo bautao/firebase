@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, deleteDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, deleteDoc, query, orderBy, getDocs, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBz-X8OPCOErD-CNECR7b6czG005pV5u2E",
@@ -25,7 +25,8 @@ const resultsTable = document.querySelector("#resultsTable tbody");
 const resetBtn = document.getElementById("resetBtn");
 
 startBtn.onclick = async () => {
-  startTime = Date.now();
+
+  startTime = serverTimestamp();
   raceActive = true;
   await setDoc(doc(db, "race", "current"), { startTime });
 };
@@ -98,14 +99,42 @@ stop4Btn.onclick =  async () => {
 };
 
 async function setTime(nameValue){
-    console.log("stopping 1" + nameValue)
+
+//    const localTest = Date.now();
+//    console.log("stopping 1" + nameValue)
+//    await addDoc(collection(db, "Time", "startTime", "startTime"), {
+//        test: timeTest
+//    });
+//
+//    const docRef2 = doc(db, "Time", "startTime");
+//    const docSnap = await getDoc(docRef2);
+//
+//   if (docSnap.exists()) {
+//         const data = docSnap.data();
+//         const timestamp = data.timestamp;
+//
+//         // Convert to Date object
+//         const date = timestamp.toDate();
+//         console.log("Document data:", data);
+//         console.log("Timestamp:", date);
+//    }else {
+//          console.log("No such document!");
+//        }
+
+
+//    const secondTime = Date.now();
+//    console.log(secondTime );
+//    console.log(localTest );
+//    console.log(secondTime-localTest );
+
+
     if (!raceActive || !startTime) return;
-      const stopTime = Date.now();
+      const stopTime = serverTimestamp();
       console.log("stoptime" + stopTime)
-      const elapsed = stopTime - startTime;
+//      const elapsed = stopTime - startTime;
       await addDoc(collection(db, "race", "current", "results"), {
         name: nameValue,
-        time: elapsed
+        time: stopTime
       });
 }
 
@@ -114,7 +143,8 @@ onSnapshot(query(collection(db, "race", "current", "results"), orderBy("time")),
   snapshot.forEach(docSnap => {
     const { name, time } = docSnap.data();
     const row = document.createElement("tr");
-    row.innerHTML = `<td>${name}</td><td>${(time / 1000).toFixed(2)}s</td>`;
+    //todo: fix time here
+    row.innerHTML = `<td>${name}</td><td>${(time.toDate() / 1000).toFixed(2)}s</td>`;
     resultsTable.appendChild(row);
   });
 });

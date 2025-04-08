@@ -30,7 +30,7 @@ startBtn.onclick = async () => {
   await setDoc(doc(db, "race", "current"), { startTime });
 };
 
-stoppBtn.onclick = async () => {
+stopBtn.onclick = async () => {
   startTime = Date.now();
   raceActive = false;
   await setDoc(doc(db, "race", "current"), { startTime });

@@ -30,6 +30,12 @@ startBtn.onclick = async () => {
   await setDoc(doc(db, "race", "current"), { startTime });
 };
 
+stoppBtn.onclick = async () => {
+  startTime = Date.now();
+  raceActive = false;
+  await setDoc(doc(db, "race", "current"), { startTime });
+};
+
 racerForm.onsubmit = async (e) => {
   e.preventDefault();
   const formData = new FormData(racerForm);

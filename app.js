@@ -31,9 +31,8 @@ startBtn.onclick = async () => {
 };
 
 stopBtn.onclick = async () => {
-  startTime = Date.now();
   raceActive = false;
-  await setDoc(doc(db, "race", "current"), { startTime });
+  await setDoc(doc(db, "race", "current"), { startTime: null });
 };
 
 racerForm.onsubmit = async (e) => {
@@ -77,6 +76,38 @@ onSnapshot(doc(db, "race", "current"), (docSnap) => {
     timerDisplay.textContent = "00:00.00";
   }
 });
+
+stop1Btn.onclick =  async () => {
+    console.log("stopping 1")
+    setTime("Bahn 1");
+};
+
+stop2Btn.onclick =  async () => {
+    console.log("stopping 2")
+    setTime("Bahn 2");
+};
+
+stop3Btn.onclick =  async () => {
+    console.log("stopping 3")
+    setTime("Bahn 3");
+};
+
+stop4Btn.onclick =  async () => {
+    console.log("stopping 4")
+    setTime("Bahn 4");
+};
+
+async function setTime(nameValue){
+    console.log("stopping 1" + nameValue)
+    if (!raceActive || !startTime) return;
+      const stopTime = Date.now();
+      console.log("stoptime" + stopTime)
+      const elapsed = stopTime - startTime;
+      await addDoc(collection(db, "race", "current", "results"), {
+        name: nameValue,
+        time: elapsed
+      });
+}
 
 onSnapshot(query(collection(db, "race", "current", "results"), orderBy("time")), (snapshot) => {
   resultsTable.innerHTML = "";

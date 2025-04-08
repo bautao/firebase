@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Race Timer</title>
+    <link rel="stylesheet" href="style.css"/>
+    <script type="module" src="app.js" defer></script>
+</head>
+<body>
+<div class="container">
+    <h1>Bahn 1</h1>
+    <div id="status">Race not started</div>
+    <div id="timer">00:00.00</div>
+    <div style="display: none;">
+        <button id="startBtn">Start Race</button>
+        <button id="stopBtn">Stop Race</button>
+
+        <form id="racerForm">
+            <h2>Enter Racer Names</h2>
+            <label>
+                <input placeholder="Racer 1" name="racer1" value="Bahn1" required/>
+            </label>
+            <br>
+            <button type="submit">Ready</button>
+        </form>
+    </div>
+    <div id="stopButtons"></div>
+    <h2>Results</h2>
+    <table id="resultsTable">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Time</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button id="stop1Btn">Stop</button>
+    <div style="display: none;">
+        <button id="resetBtn">Reset Race</button>
+        <button id="stop2Btn">Stop</button>
+        <button id="stop3Btn">Stop</button>
+        <button id="stop4Btn">Stop</button>
+    </div>
+</div>
+</body>
+</html>

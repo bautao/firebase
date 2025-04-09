@@ -28,6 +28,7 @@ startBtn.onclick = async () => {
 
   startTime = serverTimestamp();
   raceActive = true;
+  //todo: fix starttime to be a date
   await setDoc(doc(db, "race", "current"), { startTime });
 };
 
@@ -143,8 +144,15 @@ onSnapshot(query(collection(db, "race", "current", "results"), orderBy("time")),
   snapshot.forEach(docSnap => {
     const { name, time } = docSnap.data();
     const row = document.createElement("tr");
+    const timeData = time.data();
+
+    const timestamp = timeData.timestamp
+    const date = timestamp.toDate();
+    console.log(timeData);
+    console.log(timeData.timestamp);
+
     //todo: fix time here
-    row.innerHTML = `<td>${name}</td><td>${(time.toDate() / 1000).toFixed(2)}s</td>`;
+//    row.innerHTML = `<td>${name}</td><td>${(time.toDate() / 1000).toFixed(2)}s</td>`;
     resultsTable.appendChild(row);
   });
 });

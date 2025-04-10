@@ -14,6 +14,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let startTime = null;
+let localStartTime = null;
 let raceActive = false;
 
 const statusDiv = document.getElementById("status");
@@ -27,6 +28,7 @@ const resetBtn = document.getElementById("resetBtn");
 startBtn.onclick = async () => {
 
   startTime = serverTimestamp();
+  localStartTime = new Date();
   raceActive = true;
   //todo: fix starttime to be a date
   await setDoc(doc(db, "race", "current"), { startTime });
@@ -69,10 +71,12 @@ onSnapshot(doc(db, "race", "current"), (docSnap) => {
   const data = docSnap.data();
   if (data && data.startTime) {
     startTime = data.startTime;
+    localStartTime = data.startTime;
     raceActive = true;
     statusDiv.textContent = "Race in progress";
   } else {
     startTime = null;
+    localStartTime = null;
     raceActive = false;
     statusDiv.textContent = "Race not started";
     timerDisplay.textContent = "00:00.00";
@@ -130,36 +134,107 @@ async function setTime(nameValue){
 
 
     if (!raceActive || !startTime) return;
-      const stopTime = serverTimestamp();
-      console.log("stoptime" + stopTime)
+        const stopTime = serverTimestamp();
+        console.log("stoptime" + stopTime)
 //      const elapsed = stopTime - startTime;
-      await addDoc(collection(db, "race", "current", "results"), {
-        name: nameValue,
-        time: stopTime
-      });
+//        const docRef2 = doc(db, "Time", "startTime");
+//        const docSnap = await getDoc(docRef2);
+//        if (docSnap.exists()) {
+//           const data = docSnap.data();
+//           const timestamp = data.timestamp;
+//
+//           // Convert to Date object
+//           const date = timestamp.toDate();
+//           console.log("Document data:", data);
+//           console.log("Timestamp:", date);
+//           const elapsedTest = stopTime.data().toDate() - date;
+//           console.log("elapsed:", elapsedTest);
+//        }
+
+        await addDoc(collection(db, "race", "current", "results"), {
+            name: nameValue,
+            time: stopTime
+        });
+
+//
+//        const docRef2 = doc(db, "Time", "startTime");
+//        const docSnap = await getDoc(docRef2);
+//
+//        if (docSnap.exists()) {
+//           const data = docSnap.data();
+//           const timestamp = data.timestamp;
+//
+//           // Convert to Date object
+//           const date = timestamp.toDate();
+//           console.log("Document data:", data);
+//           console.log("Timestamp:", date);
+//        }else {
+//            console.log("No such document!");
+//          }
+
+}
+
+async function getStartTime(){
+
+    console.log("getstarttime");
+    const docRef2 = doc(db, "race", "current");
+    const docSnap = await getDoc(docRef2);
+
+    if (docSnap.exists()) {
+       const data = docSnap.data();
+       const timestamp = data.startTime;
+
+       // Convert to Date object
+       const date = timestamp;
+       console.log("Document data:", data);
+       console.log("startdate:", date.toDate());
+       return date.toDate();
+    }else {
+        console.log("No such document!");
+      }
+
 }
 
 onSnapshot(query(collection(db, "race", "current", "results"), orderBy("time")), (snapshot) => {
   resultsTable.innerHTML = "";
-  snapshot.forEach(docSnap => {
-    const { name, time } = docSnap.data();
-    const row = document.createElement("tr");
-    const timeData = time.data();
+  //todo: move this back
+  getStartTime().then((startingTime) => {
+      snapshot.forEach(docSnap => {
+        const { name, time } = docSnap.data();
+        const row = document.createElement("tr");
+//        console.log("start: "+ startingTime);
+//        console.log("stop: "+ time.toDate());
+        const elapsed = time.toDate() - startingTime;
+        const displayTime = (elapsed/1000).toFixed(2);
+//        console.log("elapsed: ", displayTime );
 
-    const timestamp = timeData.timestamp
-    const date = timestamp.toDate();
-    console.log(timeData);
-    console.log(timeData.timestamp);
+    //
+    //    const timestamp = timeData.timestamp
+    //    const date = timestamp.toDate();
+    //    console.log(timeData);
+    //    console.log(timeData.timestamp);
 
-    //todo: fix time here
-//    row.innerHTML = `<td>${name}</td><td>${(time.toDate() / 1000).toFixed(2)}s</td>`;
-    resultsTable.appendChild(row);
-  });
+        //todo: fix time here
+        row.innerHTML = `<td>${name}</td><td>${displayTime}s</td>`;
+        resultsTable.appendChild(row);
+      });
+
+    })
+    .catch((error) => {
+     console.error("Error:", error); // Handle any errors
+});
+
 });
 
 setInterval(() => {
-  if (raceActive && startTime) {
-    const elapsed = Date.now() - startTime;
+//    console.log("localStartTime", startTime.toMillis());
+//    console.log("localStartTime12133", startTime);
+//    const testing = Date.now();
+//    console.log("localStartTime2", testing);
+//    const diff = testing - startTime.toMillis();
+//    console.log("diff: ", diff)
+  if (raceActive && localStartTime) {
+    const elapsed = Date.now() - startTime.toMillis();
     const seconds = (elapsed / 1000).toFixed(2);
     timerDisplay.textContent = `${seconds}s`;
   }

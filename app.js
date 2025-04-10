@@ -30,7 +30,6 @@ startBtn.onclick = async () => {
   startTime = serverTimestamp();
   localStartTime = new Date();
   raceActive = true;
-  //todo: fix starttime to be a date
   await setDoc(doc(db, "race", "current"), { startTime });
 };
 
@@ -197,7 +196,6 @@ async function getStartTime(){
 
 onSnapshot(query(collection(db, "race", "current", "results"), orderBy("time")), (snapshot) => {
   resultsTable.innerHTML = "";
-  //todo: move this back
   getStartTime().then((startingTime) => {
       snapshot.forEach(docSnap => {
         const { name, time } = docSnap.data();
